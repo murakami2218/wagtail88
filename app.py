@@ -27,9 +27,9 @@ app = Flask(__name__)
 #     sys.exit(1)
 
 # line_bot_api = LineBotApi(channel_access_token)
-line_bot_api = LineBotApi('ewn9UteoRnk7V3r4GydudwHOiB8/1eBoObVlIHmr0KGmBBZNiTJ16B4LHF0SLI7P92Nj6rGcZLHmRFk/Wezpk0nDAM4/vQSigEcG5ipes6oAYnh361Jgsalgn0JRVbH8qY6iyXMs30CjxABR2W21FwdB04t89/1O/w1cDnyilFU=')
+line_bot_api = LineBotApi('jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIrswbH2kUV4n4uNMtNKyRBzENYG3icRMgDCqgHslu1T6pXqJSMg9KjCw89xCmXsMdnwAtXvKJXlxoKKlmw5eWo/06tInrjURlOwdB04t89/1O/w1cDnyilFU=')
 # handler = WebhookHandler(channel_secret)
-handler = WebhookHandler('9b94fb2f0744d31e640ce69c7ef57936')
+handler = WebhookHandler('f21f90b64dfa9940749a58d86e604e37')
 
 @app.route("/")
 def hello_world():
@@ -56,6 +56,6 @@ def callback():
 def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text='メッセージを受信しました。'))
+        TextSendMessage(text='ご主人様、ありがとうございます(*^_^*)'))
 if __name__ == "__main__":
     app.run()
