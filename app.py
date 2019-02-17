@@ -35,7 +35,7 @@ handler = WebhookHandler('f21f90b64dfa9940749a58d86e604e37')
 def hello_world():
     return "ご主人様ぁ~(*^_^*)"
 
-@app.route("/callback", methods=['POST'])
+@app.route("/callback", methods=['GET'])
 def callback():
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
