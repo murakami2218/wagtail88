@@ -54,8 +54,22 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text='ご主人様、ありがとうございます(*^_^*)'))
+    text = event.message.text
+    if text == 'おはよう':
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='おはようございます、ご主人様(*^_^*)'))
+    elif text == 'こんにちは':
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='こんにちは、ご主人様(*^_^*)'))
+    elif text == 'こんばんは':
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='こんばんは、ご主人様(*^_^*)')) 
+    else:
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='関係ないこと喋ってんじゃねぇ、この下僕が(弩)'))
 if __name__ == "__main__":
     app.run()
