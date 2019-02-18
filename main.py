@@ -10,7 +10,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent, TextMessage, ImageMessage, TextSendMessage,
 )
 
 app = Flask(__name__)
@@ -53,32 +53,32 @@ def callback():
     return 'OK'
 
 #テキストメッセージが送信されたときの処理
-# @handler.add(MessageEvent, message=TextMessage)
-# def handle_message(event):
-#     text = event.message.text
-#     if text == 'おはよう':
-#         line_bot_api.reply_message(
-#             event.reply_token,
-#             TextSendMessage(text='おはようございます、ご主人様(*^_^*)'))
-#     elif text == 'こんにちは':
-#         line_bot_api.reply_message(
-#             event.reply_token,
-#             TextSendMessage(text='こんにちは、ご主人様(*^_^*)'))
-#     elif text == 'こんばんは':
-#         line_bot_api.reply_message(
-#             event.reply_token,
-#             TextSendMessage(text='こんばんは、ご主人様(*^_^*)')) 
-#     else:
-#         line_bot_api.reply_message(
-#             event.reply_token,
-#             TextSendMessage(text='関係ないこと喋ってんじゃねぇ、この下僕が(弩)'))
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    text = event.message.text
+    if text == 'おはよう':
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='おはようございます、ご主人様(*^_^*)'))
+    elif text == 'こんにちは':
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='こんにちは、ご主人様(*^_^*)'))
+    elif text == 'こんばんは':
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='こんばんは、ご主人様(*^_^*)')) 
+    else:
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='関係ないこと喋ってんじゃねぇ、この下僕が(弩)'))
 
 #画像メッセージが送信されたときの処理
-@handler.add(MessageEvent, message=ImageMessage)#引数に処理するイベントを指定してください
+@handler.add(MessageEvent, message=ImageMessage)
 def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text='画像を受信しました。')) 
+        TextSendMessage(text='いいね(*^_^*)')) 
 
 if __name__ == "__main__":
     app.run()
