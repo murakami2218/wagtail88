@@ -71,7 +71,7 @@ def handle_message(event):
     else:
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text='関係ないこと喋ってんじゃねぇ、この下僕が(弩)'))
+            TextSendMessage(text=event.message.text))
 
 #画像メッセージが送信されたときの処理
 @handler.add(MessageEvent, message=ImageMessage)
