@@ -52,6 +52,7 @@ def callback():
 
     return 'OK'
 
+#テキストメッセージが送信されたときの処理
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     text = event.message.text
@@ -71,5 +72,12 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text='関係ないこと喋ってんじゃねぇ、この下僕が(弩)'))
+
+#画像メッセージが送信されたときの処理
+@handler.add(MessageEvent, message=ImageMessage)
+def handle_message(event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text='いい写真ね(*^_^*)'))
 if __name__ == "__main__":
     app.run()
