@@ -72,10 +72,10 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text='関係ないこと喋ってんじゃねぇ、この下僕が(弩)'))
-@handler.add(MessageEvent, message=ImageMessage)#引数に処理するイベントを指定してください
-def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text='いいね！')) 
+# @handler.add(MessageEvent, message=ImagesMessage)#引数に処理するイベントを指定してください
+# def handle_message(event):
+#     line_bot_api.reply_message(
+#         event.reply_token,
+#         TextSendMessage(text='いいね！')) 
 if __name__ == "__main__":
     app.run()
