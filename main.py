@@ -10,7 +10,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, ImageMessage, TextSendMessage,
+    MessageEvent, TextMessage, ImageMessage, TextSendMessage, FollowEvent
 )
 
 app = Flask(__name__)
@@ -79,6 +79,19 @@ def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text='いいね(*^_^*)')) 
+
+#フォローイベント時の処理
+@handler.add(FollowEvent)
+def handle_follow(event):
+    #誰が追加したかわかるように機能追加
+    profile = line_bot_api.get_profile(event.source.user_id)
+    line_bot_api.push_message("U976352bf0af02711f9d172e8317f26bc",
+        TextSendMessage(text="表示名:{}\nユーザID:{}\n画像のURL:{}\nステータスメッセージ:{}"\
+        .format(profile.display_name, profile.user_id, profile.picture_url, profile.status_message)))
+    
+    #友達追加したユーザにメッセージを送信
+    line_bot_api.reply_message(      
+        event.reply_token, TextSendMessage(text='友達になってくれてありがとう(*^_^*)'))
 
 if __name__ == "__main__":
     app.run()
