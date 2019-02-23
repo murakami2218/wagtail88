@@ -100,11 +100,14 @@ def handle_image(event):
         messages = [
             TextSendMessage(text=image_text),
         ]
-
-        reply_message(event, messages)
+        line_bot_api.reply_message(
+        event.reply_token,
+        messages)
 
     except Exception as e:
-        reply_message(event, TextSendMessage(text='エラーが発生しました'))
+        line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text='エラーが発生しました。'))
 
 def getImageLine(id):
 
@@ -139,7 +142,7 @@ def get_text_by_ms(image_url):
 
 def pred_gender(img):
 
-    
+
     # グローバル変数を取得する
     global model
 
