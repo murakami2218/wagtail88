@@ -78,7 +78,7 @@ def handle_message(event):
 def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text='いいね(*^_^*)')) 
+        TextSendMessage(text='いいねぇ(*^_^*)')) 
 
 #フォローイベント時の処理
 @handler.add(FollowEvent)
