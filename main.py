@@ -13,6 +13,11 @@ from linebot.models import (
     MessageEvent, TextMessage, ImageMessage, TextSendMessage, FollowEvent
 )
 
+from keras.models import Sequential, load_model
+from keras.preprocessing import image
+import tensorflow as tf
+import numpy as np
+
 app = Flask(__name__)
 
 # 環境変数からchannel_secret・channel_access_tokenを取得
@@ -74,11 +79,40 @@ def handle_message(event):
             TextSendMessage(text=event.message.text))
 
 #画像メッセージが送信されたときの処理
+static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
+os.makedirs(static_tmp_path)#写真を保存するフォルダを作成する
+
+graph = tf.get_default_graph()#kerasのバグでこのコードが必要.
+model = load_model('param_vgg_15.hdf5')#学習済みモデルをロードする
+
 @handler.add(MessageEvent, message=ImageMessage)
-def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text='いいねぇ(*^_^*)')) 
+def handle_content_message(event):
+    global graph
+    with graph.as_default():
+        message_content = line_bot_api.get_message_content(event.message.id)
+        with tempfile.NamedTemporaryFile(dir=static_tmp_path, prefix="jpg" + '-', delete=False) as tf: 
+            for chunk in message_content.iter_content():
+                tf.write(chunk)
+                tempfile_path = tf.name
+
+        dist_path = tempfile_path + '.' + "jpg"
+        dist_name = os.path.basename(dist_path)
+        os.rename(tempfile_path, dist_path)
+
+        filepath = os.path.join('static', 'tmp', dist_name)#送信された画像のパスが格納されている
+
+#以下、送信された画像をモデルに入れる
+        image = image.load_img(filepath, target_size=(32,32))#送信された画像を読み込み、リサイズする
+        image = image.img_to_array(image)#画像データをndarrayに変換する
+        data = np.array([image])#model.predict()で扱えるデータの次元にそろえる
+
+        result = model.predict(data)
+        predicted = result.argmax()#予測結果が格納されている
+
+        if predicted == 0:#予測結果に対応したテキストメッセージを送ることができる。
+            line_bot_api.reply_message(event.reply_token, [TextSendMessage(text='男')])
+        if predicted == 1:
+            line_bot_api.reply_message(event.reply_token, [TextSendMessage(text='女')])
 
 #フォローイベント時の処理
 @handler.add(FollowEvent)
