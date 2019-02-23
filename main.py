@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-import os, io, json, requests
+#import os, io, json, requests
+import os
 import sys
-from io import BytesIO
-from PIL import Image
+#from io import BytesIO
+#from PIL import Image
 from flask import Flask, request, abort
 
 from linebot import (
@@ -15,13 +16,13 @@ from linebot.models import (
     MessageEvent, TextMessage, ImageMessage, TextSendMessage, FollowEvent
 )
 
-from keras.models import Sequential, load_model
-#from keras.preprocessing import image
-from keras.preprocessing import load_img, img_to_array
-import tensorflow as tf
-import numpy as np
-import tempfile
-import cv2
+# from keras.models import Sequential, load_model
+# from keras.preprocessing import image
+# from keras.preprocessing import load_img, img_to_array
+# import tensorflow as tf
+# import numpy as np
+# import tempfile
+# import cv2
 
 app = Flask(__name__)
 
@@ -42,7 +43,7 @@ line_bot_api = LineBotApi('jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIr
 handler = WebhookHandler('f21f90b64dfa9940749a58d86e604e37')
 
 # model はグローバルで宣言し、初期化しておく
-model = None
+#model = None
 
 @app.route("/")
 def hello_world():
