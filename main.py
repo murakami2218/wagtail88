@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-import os
+import os, io, json, requests
 import sys
+from io import BytesIO
+from PIL import Image
 from flask import Flask, request, abort
 
 from linebot import (
@@ -19,6 +21,7 @@ from keras.preprocessing import load_img, img_to_array
 import tensorflow as tf
 import numpy as np
 import tempfile
+import cv2
 
 app = Flask(__name__)
 
@@ -37,6 +40,9 @@ app = Flask(__name__)
 line_bot_api = LineBotApi('jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIrswbH2kUV4n4uNMtNKyRBzENYG3icRMgDCqgHslu1T6pXqJSMg9KjCw89xCmXsMdnwAtXvKJXlxoKKlmw5eWo/06tInrjURlOwdB04t89/1O/w1cDnyilFU=')
 # handler = WebhookHandler(channel_secret)
 handler = WebhookHandler('f21f90b64dfa9940749a58d86e604e37')
+
+# model はグローバルで宣言し、初期化しておく
+model = None
 
 @app.route("/")
 def hello_world():
@@ -81,40 +87,71 @@ def handle_message(event):
             TextSendMessage(text=event.message.text))
 
 #画像メッセージが送信されたときの処理
-static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
-os.makedirs(static_tmp_path)#写真を保存するフォルダを作成する
-
-graph = tf.get_default_graph()#kerasのバグでこのコードが必要.
-model = load_model('param_vgg_15.hdf5')#学習済みモデルをロードする
-
 @handler.add(MessageEvent, message=ImageMessage)
-def handle_content_message(event):
-    global graph
-    with graph.as_default():
-        message_content = line_bot_api.get_message_content(event.message.id)
-        with tempfile.NamedTemporaryFile(dir=static_tmp_path, prefix="jpg" + '-', delete=False) as tf: 
-            for chunk in message_content.iter_content():
-                tf.write(chunk)
-                tempfile_path = tf.name
+def handle_image(event):
+    print("handle_image:", event)
 
-        dist_path = tempfile_path + '.' + "jpg"
-        dist_name = os.path.basename(dist_path)
-        os.rename(tempfile_path, dist_path)
+    message_id = event.message.id
+    getImageLine(message_id)
 
-        filepath = os.path.join('static', 'tmp', dist_name)#送信された画像のパスが格納されている
+    try:
+        image_text = get_text_by_ms(image_url=getImageLine(message_id))
 
-#以下、送信された画像をモデルに入れる
-        image = load_img(filepath, target_size=(32,32))#送信された画像を読み込み、リサイズする
-        image = img_to_array(image)#画像データをndarrayに変換する
-        data = np.array([image])#model.predict()で扱えるデータの次元にそろえる
+        messages = [
+            TextSendMessage(text=image_text),
+        ]
 
-        result = model.predict(data)
-        predicted = result.argmax()#予測結果が格納されている
+        reply_message(event, messages)
 
-        if predicted == 0:#予測結果に対応したテキストメッセージを送ることができる。
-            line_bot_api.reply_message(event.reply_token, [TextSendMessage(text='男')])
-        if predicted == 1:
-            line_bot_api.reply_message(event.reply_token, [TextSendMessage(text='女')])
+    except Exception as e:
+        reply_message(event, TextSendMessage(text='エラーが発生しました'))
+
+def getImageLine(id):
+
+    line_url = 'https://api.line.me/v2/bot/message/' + id + '/content/'
+
+    # 画像の取得
+    result = requests.get(line_url, headers=header)
+    print(result)
+
+    # 画像の保存
+    im = Image.open(BytesIO(result.content))
+    filename = '/tmp/' + id + '.jpg'
+    print(filename)
+    im.save(filename)
+
+    return filename
+
+def get_text_by_ms(image_url):
+
+    # 90行目で保存した url から画像を書き出す。
+    image = cv2.imread(image_url)
+    if image is None:
+        print("Not open")
+    b,g,r = cv2.split(image)
+    image = cv2.merge([r,g,b])
+    img = cv2.resize(image,(32,32))
+    img=np.expand_dims(img,axis=0)
+    gender = pred_gender(img=img)
+
+    text = gender
+    return text
+
+def pred_gender(img):
+
+    
+    # グローバル変数を取得する
+    global model
+
+    # 一番初めだけ model をロードしたい
+    if model is None:
+        model = load_model('./param_vgg_15.hdf5')
+
+    predict_classes = np.argmax(model.predict(np.array([img])))
+    if predict_classes == 0:
+        return '男'
+    else:
+        return '女'
 
 #フォローイベント時の処理
 @handler.add(FollowEvent)
