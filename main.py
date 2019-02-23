@@ -86,29 +86,6 @@ def handle_message(event):
             event.reply_token,
             TextSendMessage(text=event.message.text))
 
-#画像メッセージが送信されたときの処理
-@handler.add(MessageEvent, message=ImageMessage)
-def handle_image(event):
-    print("handle_image:", event)
-
-    message_id = event.message.id
-    getImageLine(message_id)
-
-    try:
-        image_text = get_text_by_ms(image_url=getImageLine(message_id))
-
-        messages = [
-            TextSendMessage(text=image_text),
-        ]
-        line_bot_api.reply_message(
-        event.reply_token,
-        messages)
-
-    except Exception as e:
-        line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text='いいわねぇ(*^_^*)')) 
-
 #フォローイベント時の処理
 @handler.add(FollowEvent)
 def handle_follow(event):
