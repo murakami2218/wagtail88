@@ -102,19 +102,14 @@ def handle_image(event):
 
     message_id = event.message.id
     getImageLine(message_id)
+    image_text = get_text_by_ms(image_url=getImageLine(message_id))
 
-    try:
-        image_text = get_text_by_ms(image_url=getImageLine(message_id))
+    messages = [
+        TextSendMessage(text=image_text),
+    ]
 
-        messages = [
-            TextSendMessage(text=image_text),
-        ]
-
-        line_bot_api.reply_message(event, messages)
-
-    except Exception as e:
-        line_bot_api.reply_message(event, TextSendMessage(text='エラーが発生しました'))
-
+    line_bot_api.reply_message(event, messages)
+    
 def getImageLine(id):
 
     line_url = 'https://api.line.me/v2/bot/message/' + id + '/content/'
