@@ -91,12 +91,6 @@ def handle_message(event):
             event.reply_token,
             TextSendMessage(text=event.message.text))
 
-# 以下、画像認識のためのコード
-static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
-os.makedirs(static_tmp_path, exist_ok=True)#写真を保存するフォルダを作成する
-
-graph = tf.get_default_graph()#kerasのバグでこのコードが必要.
-model = load_model('param_vgg_15.hdf5')#学習済みモデルをロードする
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
     print("handle_image:", event)
@@ -133,8 +127,6 @@ def getImageLine(id):
     return filename
 
 def get_text_by_ms(image_url):
-
-    # 90行目で保存した url から画像を書き出す。
     image = cv2.imread(image_url)
     if image is None:
         print("Not open")
@@ -165,40 +157,6 @@ def detect_gender(img):
     elif predicted == 1:
         gender = "女"
     return gender
-
-
-def handle_content_message(event):
-    global graph
-    with graph.as_default():
-        message_content = line_bot_api.get_message_content(event.message.id)
-        with tempfile.NamedTemporaryFile(dir=static_tmp_path, prefix="jpg" + '-', delete=False) as tf: 
-            for chunk in message_content.iter_content():
-                tf.write(chunk)
-                tempfile_path = tf.name
-
-        dist_path = tempfile_path + '.' + "jpg"
-        dist_name = os.path.basename(dist_path)
-        os.rename(tempfile_path, dist_path)
-
-        filepath = os.path.join('static', 'tmp', dist_name) #送信された画像のパスが格納されている
-
-#以下、送信された画像をモデルに入れる
-        image = cv2.imread(filepath)
-        b,g,r = cv2.split(image)
-        image = cv2.merge([r,g,b])
-        img = cv2.resize(image,(32,32))
-        img=np.expand_dims(img,axis=0)
-        result = model.predict(img)
-        predicted = result.argmax()#予測結果が格納されている
-
-        if predicted == 0:#予測結果に対応したテキストメッセージを送ることができる。
-            line_bot_api.reply_message(
-                event.reply_token, 
-                TextSendMessage(text='すいませんが男性には興味ありません'))
-        else:
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text='素敵な女性ですね(*^_^*)'))
 
 #フォローイベント時の処理
 @handler.add(FollowEvent)
