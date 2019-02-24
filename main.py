@@ -114,7 +114,7 @@ def handle_content_message(event):
         dist_name = os.path.basename(dist_path)
         os.rename(tempfile_path, dist_path)
 
-        filepath = os.path.join('static', 'tmp', dist_name)#送信された画像のパスが格納されている
+        filepath = os.path.join('static', 'tmp', dist_name) #送信された画像のパスが格納されている
 
 #以下、送信された画像をモデルに入れる
         image = image.load_img(filepath, target_size=(32,32))#送信された画像を読み込み、リサイズする
