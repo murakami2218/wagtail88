@@ -96,6 +96,11 @@ def handle_message(event):
             event.reply_token,
             TextSendMessage(text=event.message.text))
 
+static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
+os.makedirs(static_tmp_path, exist_ok=True)#写真を保存するフォルダを作成する
+
+graph = tf.get_default_graph()#kerasのバグでこのコードが必要.
+model = load_model('models.h5')#学習済みモデルをロードする
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_content_message(event):
     global graph
@@ -113,7 +118,7 @@ def handle_content_message(event):
         filepath = os.path.join('static', 'tmp', dist_name) #送信された画像のパスが格納されている
 
 #以下、送信された画像をモデルに入れる
-        image = image.load_img(filepath, target_size=(32,32))#送信された画像を読み込み、リサイズする
+        image = image.load_img(filepath, target_size=(50,50))#送信された画像を読み込み、リサイズする
         image = image.img_to_array(image)#画像データをndarrayに変換する
         data = np.array([image])#model.predict()で扱えるデータの次元にそろえる
 
