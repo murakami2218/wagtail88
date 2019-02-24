@@ -8,7 +8,8 @@ import sys
 from flask import Flask, request, abort
 
 from keras.models import Sequential, load_model
-from keras.preprocessing import load_img, img_to_array
+from keras.preprocessing import image
+#from keras.preprocessing import load_img, img_to_array
 import tensorflow as tf
 import numpy as np
 import tempfile
@@ -22,7 +23,6 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, ImageMessage, TextSendMessage, FollowEvent
 )
-# from keras.preprocessing import image
 # import cv2
 
 app = Flask(__name__)
@@ -111,8 +111,8 @@ def handle_content_message(event):
         filepath = os.path.join('static', 'tmp', dist_name)#送信された画像のパスが格納されている
 
 #以下、送信された画像をモデルに入れる
-        image = load_img(filepath, target_size=(32,32))#送信された画像を読み込み、リサイズする
-        image = img_to_array(image)#画像データをndarrayに変換する
+        image = image.load_img(filepath, target_size=(32,32))#送信された画像を読み込み、リサイズする
+        image = image.img_to_array(image)#画像データをndarrayに変換する
         data = np.array([image])#model.predict()で扱えるデータの次元にそろえる
 
         result = model.predict(data)
