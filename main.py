@@ -6,14 +6,13 @@ import sys
 #from PIL import Image
 
 from flask import Flask, request, abort
-
+import h5py
 from keras.models import Sequential, load_model
 from keras.preprocessing import image
 #from keras.preprocessing import load_img, img_to_array
 import tensorflow as tf
 import numpy as np
 import tempfile
-import h5py
 
 from linebot import (
     LineBotApi, WebhookHandler
