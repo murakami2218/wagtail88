@@ -117,11 +117,12 @@ def handle_content_message(event):
         filepath = os.path.join('static', 'tmp', dist_name) #送信された画像のパスが格納されている
 
 #以下、送信された画像をモデルに入れる
-        image = image.load_img(filepath, target_size=(32,32))#送信された画像を読み込み、リサイズする
-        image = image.img_to_array(image)#画像データをndarrayに変換する
-        data = np.array([image])#model.predict()で扱えるデータの次元にそろえる
-
-        result = model.predict(data)
+        image = cv2.imread(filepath)
+        b,g,r = cv2.split(image)
+        image = cv2.merge([r,g,b])
+        img = cv2.resize(image,(32,32))
+        img=np.expand_dims(img,axis=0)
+        result = model.predict(img)
         predicted = result.argmax()#予測結果が格納されている
 
         if predicted == 0:#予測結果に対応したテキストメッセージを送ることができる。
