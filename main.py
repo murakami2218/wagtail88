@@ -134,7 +134,7 @@ def get_text_by_ms(image_url):
     image = cv2.merge([r,g,b])
     img = cv2.resize(image,(32,32))
     img=np.expand_dims(img,axis=0)
-    gender = detect_gender(img=img)
+    gender = detect_gender(img)
 
     text = gender
     return text
@@ -156,6 +156,8 @@ def detect_gender(img):
         gender = "男"
     elif predicted == 1:
         gender = "女"
+    else:
+        gender = "幽霊"
     return gender
 
 #フォローイベント時の処理
