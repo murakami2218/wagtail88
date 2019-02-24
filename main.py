@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-#import os, io, json, requests
-import os
+import requests, json, os, io, cv2
+from io import BytesIO
+from PIL import Image
 import sys
-#from io import BytesIO
-#from PIL import Image
-
 from flask import Flask, request, abort
 import h5py
 from keras.models import Model, Sequential, load_model
@@ -29,7 +27,6 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, ImageMessage, TextSendMessage, FollowEvent
 )
-# import cv2
 
 app = Flask(__name__)
 
@@ -101,6 +98,75 @@ os.makedirs(static_tmp_path, exist_ok=True)#写真を保存するフォルダを
 graph = tf.get_default_graph()#kerasのバグでこのコードが必要.
 model = load_model('param_vgg_15.hdf5')#学習済みモデルをロードする
 @handler.add(MessageEvent, message=ImageMessage)
+def handle_image(event):
+    print("handle_image:", event)
+
+    message_id = event.message.id
+    getImageLine(message_id)
+
+    try:
+        image_text = get_text_by_ms(image_url=getImageLine(message_id))
+
+        messages = [
+            TextSendMessage(text=image_text),
+        ]
+
+        line_bot_api.reply_message(event, messages)
+
+    except Exception as e:
+        line_bot_api.reply_message(event, TextSendMessage(text='エラーが発生しました'))
+
+def getImageLine(id):
+
+    line_url = 'https://api.line.me/v2/bot/message/' + id + '/content/'
+
+    # 画像の取得
+    result = requests.get(line_url, headers=header)
+    print(result)
+
+    # 画像の保存
+    im = Image.open(BytesIO(result.content))
+    filename = '/tmp/' + id + '.jpg'
+    print(filename)
+    im.save(filename)
+
+    return filename
+
+def get_text_by_ms(image_url):
+
+    # 90行目で保存した url から画像を書き出す。
+    image = cv2.imread(image_url)
+    if image is None:
+        print("Not open")
+    b,g,r = cv2.split(image)
+    image = cv2.merge([r,g,b])
+    img = cv2.resize(image,(32,32))
+    img=np.expand_dims(img,axis=0)
+    gender = detect_gender(img=img)
+
+    text = gender
+    return text
+
+def detect_gender(img):
+
+    gender = ""
+    # グローバル変数を取得する
+    global model
+
+    # 一番初めだけ model をロードしたい
+    if model is None:
+        model = load_model('./param_vgg_15.hdf5')
+
+    result = model.predict(img)
+    predicted = np.argmax(result)
+
+    if predicted == 0:
+        gender = "男"
+    elif predicted == 1:
+        gender = "女"
+    return gender
+
+
 def handle_content_message(event):
     global graph
     with graph.as_default():
