@@ -101,6 +101,11 @@ os.makedirs(static_tmp_path, exist_ok=True)#写真を保存するフォルダを
 graph = tf.get_default_graph()#kerasのバグでこのコードが必要.
 model = load_model('param_vgg_15.hdf5')#学習済みモデルをロードする
 @handler.add(MessageEvent, message=ImageMessage)
+def handle_message(event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text='画像を受信しました。'))
+
 def handle_content_message(event):
     global graph
     with graph.as_default():
