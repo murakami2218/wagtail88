@@ -109,7 +109,7 @@ def handle_image(event):
     ]
 
     line_bot_api.reply_message(event, messages)
-    
+
 def getImageLine(id):
 
     line_url = 'https://api.line.me/v2/bot/message/' + id + '/content/'
@@ -132,7 +132,7 @@ def get_text_by_ms(image_url):
         print("Not open")
     b,g,r = cv2.split(image)
     image = cv2.merge([r,g,b])
-    img = cv2.resize(image,(32,32))
+    img = cv2.resize(image,(50,50))
     img=np.expand_dims(img,axis=0)
     gender = detect_gender(img)
 
