@@ -130,10 +130,14 @@ def handle_content_message(event):
             line_bot_api.reply_message(
                 event.reply_token, 
                 TextSendMessage(text='男性には興味ありません'))
-        else:
+        elif predicted == 1:
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text='素敵な女性ですね(*^_^*)'))
+        else:
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text='あなたは幽霊です'))
 
 #フォローイベント時の処理
 @handler.add(FollowEvent)
