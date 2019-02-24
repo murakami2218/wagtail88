@@ -100,7 +100,7 @@ static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
 os.makedirs(static_tmp_path, exist_ok=True)#写真を保存するフォルダを作成する
 
 graph = tf.get_default_graph()#kerasのバグでこのコードが必要.
-model = load_model('models.h5')#学習済みモデルをロードする
+model = load_model('param_vgg_15.hdf5')#学習済みモデルをロードする
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_content_message(event):
     global graph
