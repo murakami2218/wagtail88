@@ -42,13 +42,18 @@ app = Flask(__name__)
 #     sys.exit(1)
 
 # line_bot_api = LineBotApi(channel_access_token)
-line_bot_api = LineBotApi('jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIrswbH2kUV4n4uNMtNKyRBzENYG3icRMgDCqgHslu1T6pXqJSMg9KjCw89xCmXsMdnwAtXvKJXlxoKKlmw5eWo/06tInrjURlOwdB04t89/1O/w1cDnyilFU=')
+#line_bot_api = LineBotApi('jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIrswbH2kUV4n4uNMtNKyRBzENYG3icRMgDCqgHslu1T6pXqJSMg9KjCw89xCmXsMdnwAtXvKJXlxoKKlmw5eWo/06tInrjURlOwdB04t89/1O/w1cDnyilFU=')
 # handler = WebhookHandler(channel_secret)
-handler = WebhookHandler('f21f90b64dfa9940749a58d86e604e37')
+#handler = WebhookHandler('f21f90b64dfa9940749a58d86e604e37')
 
+YOUR_CHANNEL_ACCESS_TOKEN = os.environ["jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIrswbH2kUV4n4uNMtNKyRBzENYG3icRMgDCqgHslu1T6pXqJSMg9KjCw89xCmXsMdnwAtXvKJXlxoKKlmw5eWo/06tInrjURlOwdB04t89/1O/w1cDnyilFU="]
+YOUR_CHANNEL_SECRET = os.environ["f21f90b64dfa9940749a58d86e604e37"]
+
+line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
+handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 header = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer " + 'jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIrswbH2kUV4n4uNMtNKyRBzENYG3icRMgDCqgHslu1T6pXqJSMg9KjCw89xCmXsMdnwAtXvKJXlxoKKlmw5eWo/06tInrjURlOwdB04t89/1O/w1cDnyilFU='
+    "Authorization": "Bearer " + YOUR_CHANNEL_ACCESS_TOKEN
 }
 
 # model はグローバルで宣言し、初期化しておく
