@@ -4,7 +4,14 @@ import os
 import sys
 #from io import BytesIO
 #from PIL import Image
+
 from flask import Flask, request, abort
+
+from keras.models import Sequential, load_model
+from keras.preprocessing import load_img, img_to_array
+import tensorflow as tf
+import numpy as np
+import tempfile
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -15,13 +22,7 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, ImageMessage, TextSendMessage, FollowEvent
 )
-
-# from keras.models import Sequential, load_model
 # from keras.preprocessing import image
-# from keras.preprocessing import load_img, img_to_array
-# import tensorflow as tf
-# import numpy as np
-# import tempfile
 # import cv2
 
 app = Flask(__name__)
@@ -86,6 +87,41 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=event.message.text))
+
+# 以下、画像認識のためのコード
+static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
+os.makedirs(static_tmp_path)#写真を保存するフォルダを作成する
+
+graph = tf.get_default_graph()#kerasのバグでこのコードが必要.
+model = load_model('param_vgg_15.hdf5')#学習済みモデルをロードする
+@handler.add(MessageEvent, message=ImageMessage)
+def handle_content_message(event):
+    global graph
+    with graph.as_default():
+        message_content = line_bot_api.get_message_content(event.message.id)
+        with tempfile.NamedTemporaryFile(dir=static_tmp_path, prefix="jpg" + '-', delete=False) as tf: 
+            for chunk in message_content.iter_content():
+                tf.write(chunk)
+                tempfile_path = tf.name
+
+        dist_path = tempfile_path + '.' + "jpg"
+        dist_name = os.path.basename(dist_path)
+        os.rename(tempfile_path, dist_path)
+
+        filepath = os.path.join('static', 'tmp', dist_name)#送信された画像のパスが格納されている
+
+#以下、送信された画像をモデルに入れる
+        image = load_img(filepath, target_size=(32,32))#送信された画像を読み込み、リサイズする
+        image = img_to_array(image)#画像データをndarrayに変換する
+        data = np.array([image])#model.predict()で扱えるデータの次元にそろえる
+
+        result = model.predict(data)
+        predicted = result.argmax()#予測結果が格納されている
+
+        if predicted == 0:#予測結果に対応したテキストメッセージを送ることができる。
+            line_bot_api.reply_message(event.reply_token, [TextSendMessage(text='すいませんが男性には興味ありません')])
+        if predicted == 1:
+            line_bot_api.reply_message(event.reply_token, [TextSendMessage(text='素敵な女性ですね(*^_^*)')])
 
 #フォローイベント時の処理
 @handler.add(FollowEvent)
