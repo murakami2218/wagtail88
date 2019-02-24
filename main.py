@@ -8,18 +8,11 @@ import sys
 from flask import Flask, request, abort
 import h5py
 from keras.models import Sequential, load_model
-from keras.utils.np_utils import to_categorical
-from keras.layers import Dense, Dropout, Flatten, Input, GlobalAveragePooling2D
-from keras.applications.vgg16 import VGG16
-from keras.models import Model, Sequential
-from keras import optimizers
 from keras.preprocessing import image
 #from keras.preprocessing import load_img, img_to_array
 import tensorflow as tf
 import numpy as np
 import tempfile
-import cv2
-#import matplotlib.pyplot as plt
 
 from linebot import (
     LineBotApi, WebhookHandler
