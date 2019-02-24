@@ -8,3 +8,4 @@ opencv-python==4.0.0.21
 pillow==5.4.1
 requests==2.21.0
 html5lib==0.9999999
+h5py==2.9.0
