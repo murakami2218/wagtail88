@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-#import os, io, json, requests
-import os
+import requests, json, os, io, cv2
+from io import BytesIO
+from PIL import Image
 import sys
-#from io import BytesIO
-#from PIL import Image
-
 from flask import Flask, request, abort
 import h5py
 from keras.models import Model, Sequential, load_model
@@ -29,7 +27,6 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, ImageMessage, TextSendMessage, FollowEvent
 )
-# import cv2
 
 app = Flask(__name__)
 
@@ -49,8 +46,13 @@ line_bot_api = LineBotApi('jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIr
 # handler = WebhookHandler(channel_secret)
 handler = WebhookHandler('f21f90b64dfa9940749a58d86e604e37')
 
+# header = {
+#     "Content-Type": "application/json",
+#     "Authorization": "Bearer " + "jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIrswbH2kUV4n4uNMtNKyRBzENYG3icRMgDCqgHslu1T6pXqJSMg9KjCw89xCmXsMdnwAtXvKJXlxoKKlmw5eWo/06tInrjURlOwdB04t89/1O/w1cDnyilFU="
+# }
+
 # model はグローバルで宣言し、初期化しておく
-#model = None
+model = None
 
 @app.route("/")
 def hello_world():
@@ -94,12 +96,6 @@ def handle_message(event):
             event.reply_token,
             TextSendMessage(text=event.message.text))
 
-# 以下、画像認識のためのコード
-static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
-os.makedirs(static_tmp_path, exist_ok=True)#写真を保存するフォルダを作成する
-
-graph = tf.get_default_graph()#kerasのバグでこのコードが必要.
-model = load_model('param_vgg_15.hdf5')#学習済みモデルをロードする
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_content_message(event):
     global graph
