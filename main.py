@@ -127,7 +127,7 @@ def handle_content_message(event):
         if predicted == 0:#予測結果に対応したテキストメッセージを送ることができる。
             line_bot_api.reply_message(
                 event.reply_token, 
-                TextSendMessage(text='すいませんが男性には興味ありません'))
+                TextSendMessage(text='男性には興味ありません'))
         else:
             line_bot_api.reply_message(
                 event.reply_token,
