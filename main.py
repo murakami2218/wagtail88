@@ -48,7 +48,7 @@ handler = WebhookHandler('f21f90b64dfa9940749a58d86e604e37')
 
 header = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer " + os.environ["jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIrswbH2kUV4n4uNMtNKyRBzENYG3icRMgDCqgHslu1T6pXqJSMg9KjCw89xCmXsMdnwAtXvKJXlxoKKlmw5eWo/06tInrjURlOwdB04t89/1O/w1cDnyilFU="]
+    "Authorization": "Bearer " + "jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIrswbH2kUV4n4uNMtNKyRBzENYG3icRMgDCqgHslu1T6pXqJSMg9KjCw89xCmXsMdnwAtXvKJXlxoKKlmw5eWo/06tInrjURlOwdB04t89/1O/w1cDnyilFU="
 }
 
 # model はグローバルで宣言し、初期化しておく
