@@ -46,8 +46,13 @@ line_bot_api = LineBotApi('jYMeYeWivnfSMv/Acr2ZoI9PRi6nMo0zEJD3JVcaRvbLguzbwyTIr
 # handler = WebhookHandler(channel_secret)
 handler = WebhookHandler('f21f90b64dfa9940749a58d86e604e37')
 
+header = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + YOUR_CHANNEL_ACCESS_TOKEN
+}
+
 # model はグローバルで宣言し、初期化しておく
-#model = None
+model = None
 
 @app.route("/")
 def hello_world():
